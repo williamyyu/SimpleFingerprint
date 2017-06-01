@@ -231,6 +231,11 @@ class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
         }
     }
 
+    /**
+     * We have 5 times to retry,
+     * after failed more than 5 times, will call {@link #onAuthenticationError(int, CharSequence)}
+     * and disable authenticate for a while (depends on mobile).
+     */
     @Override
     public void onAuthenticationFailed() {
         Log.d(TAG, "onAuthenticationFailed: A fingerprint was read successfully, but that fingerprint was not registered on the device.");
