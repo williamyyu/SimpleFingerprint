@@ -17,8 +17,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SimpleFingerprint.init(this);
-
         final TextView tvStatus = (TextView) findViewById(R.id.tvStatus);
         Button btnStartAuth = (Button) findViewById(R.id.btnAuth);
         Button btnStop = (Button) findViewById(R.id.btnStop);
@@ -65,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 SimpleFingerprint.stopAuthenticate();
-                tvStatus.setText("Stop Auth ...");
+                tvStatus.setText("Auth stop.");
             }
         });
     }

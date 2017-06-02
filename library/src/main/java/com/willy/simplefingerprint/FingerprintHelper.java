@@ -8,7 +8,6 @@ import android.os.CancellationSignal;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
 import android.security.keystore.KeyProperties;
-import android.util.Log;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -26,7 +25,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
 import static com.willy.simplefingerprint.AuthError.AUTHENTICATE_FAILED;
-import static com.willy.simplefingerprint.SimpleFingerprint.TAG;
 
 /**
  * Created by willy on 2017/5/31.
@@ -56,14 +54,14 @@ class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
         try {
             mKeyStore = KeyStore.getInstance("AndroidKeyStore");
         } catch (KeyStoreException e) {
-            throw new RuntimeException("Failed to get an instance of KeyStore", e);
+            LogUtils.log("Failed to get an instance of KeyStore", e);
         }
 
         try {
             mKeyGenerator = KeyGenerator
                     .getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
         } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
-            throw new RuntimeException("Failed to get an instance of KeyGenerator", e);
+            LogUtils.log("Failed to get an instance of KeyGenerator", e);
         }
 
         createKey(KEY_NAME, true);
@@ -81,6 +79,10 @@ class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
      */
     boolean initCipher() {
         mCipher = createCipher();
+        if (mCipher == null) {
+            return false;
+        }
+
         try {
             mKeyStore.load(null);
             SecretKey key = (SecretKey) mKeyStore.getKey(KEY_NAME, null);
@@ -90,7 +92,8 @@ class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
             return false;
         } catch (KeyStoreException | CertificateException | UnrecoverableKeyException | IOException
                 | NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new RuntimeException("Failed to init Cipher", e);
+            LogUtils.log("Failed to init Cipher", e);
+            return false;
         }
     }
 
@@ -99,7 +102,7 @@ class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
             return;
         }
 
-        Log.d(TAG, "startAuth ...");
+        LogUtils.log("startAuth ...");
 
         isScanning = true;
 
@@ -119,7 +122,7 @@ class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
             return;
         }
 
-        Log.d(TAG, "stopAuth ...");
+        LogUtils.log("stopAuth ...");
 
         isScanning = false;
 
@@ -190,7 +193,7 @@ class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
             mKeyGenerator.generateKey();
         } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException
                 | CertificateException | IOException e) {
-            throw new RuntimeException(e);
+            LogUtils.log("Failed to createKey", e);
         }
     }
 
@@ -200,13 +203,14 @@ class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
                     + KeyProperties.BLOCK_MODE_CBC + "/"
                     + KeyProperties.ENCRYPTION_PADDING_PKCS7);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            throw new RuntimeException("Failed to get an instance of Cipher", e);
+            LogUtils.log("Failed to get an instance of Cipher", e);
+            return null;
         }
     }
 
     @Override
     public void onAuthenticationError(int errorCode, CharSequence errString) {
-        Log.d(TAG, "onAuthenticationError: " + errString + "(" + errorCode + ")");
+        LogUtils.log("onAuthenticationError: " + errString + "(" + errorCode + ")");
         if (mAuthCallback != null) {
             mAuthCallback.onFailed(errorCode, errString.toString());
             stopAuth();
@@ -215,7 +219,7 @@ class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
 
     @Override
     public void onAuthenticationHelp(int helpCode, CharSequence helpString) {
-        Log.d(TAG, "onAuthenticationHelp: " + helpString + "(" + helpCode + ")");
+        LogUtils.log("onAuthenticationHelp: " + helpString + "(" + helpCode + ")");
         if (mAuthCallback != null) {
             mAuthCallback.onFailed(helpCode, helpString.toString());
             stopAuth();
@@ -224,7 +228,7 @@ class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
 
     @Override
     public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
-        Log.d(TAG, "onAuthenticationSucceeded!");
+        LogUtils.log("onAuthenticationSucceeded!");
         if (mAuthCallback != null) {
             mAuthCallback.onSuccess(result.getCryptoObject());
             stopAuth();
@@ -233,12 +237,12 @@ class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
 
     /**
      * We have 5 times to retry,
-     * after failed more than 5 times, will call {@link #onAuthenticationError(int, CharSequence)}
+     * after failed 5 times, will call {@link #onAuthenticationError(int, CharSequence)}
      * and disable authenticate for a while (depends on mobile).
      */
     @Override
     public void onAuthenticationFailed() {
-        Log.d(TAG, "onAuthenticationFailed: A fingerprint was read successfully, but that fingerprint was not registered on the device.");
+        LogUtils.log("onAuthenticationFailed: A fingerprint was read successfully, but that fingerprint was not registered on the device.");
         if (mAuthCallback != null) {
             mAuthCallback.onFailed(AUTHENTICATE_FAILED.getErrorCode(), AUTHENTICATE_FAILED.getErrorMessage());
         }

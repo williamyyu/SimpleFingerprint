@@ -2,7 +2,6 @@ package com.willy.simplefingerprint;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import static com.willy.simplefingerprint.AuthError.CIPHER_INIT_ERROR;
 
@@ -17,35 +16,44 @@ public class SimpleFingerprint {
     private static FingerprintHelper sFingerprintHelper;
 
     public static void init(@NonNull Context context) {
+        init(context, false);
+    }
+
+    /**
+     * @param context
+     * @param isDebugMode To determine whether to print the log message.
+     */
+    public static void init(@NonNull Context context, boolean isDebugMode) {
         sFingerprintHelper = new FingerprintHelper(context);
+        LogUtils.setIsDebugMode(isDebugMode);
     }
 
     public static boolean authenticate(AuthCallback authCallback) {
         if (sFingerprintHelper == null) {
-            Log.d(TAG, "onNotInitialize");
+            LogUtils.log("onNotInitialize");
             authCallback.onNotInitialize();
             return false;
         }
         if (!sFingerprintHelper.isHardwareDetected()) {
-            Log.d(TAG, "onNoHardwareDetected");
+            LogUtils.log("onNoHardwareDetected");
             authCallback.onNoHardwareDetected();
             return false;
         }
 
         if (!sFingerprintHelper.isKeyguardSecure()) {
-            Log.d(TAG, "onScreenLockNotSetUp");
+            LogUtils.log("onScreenLockNotSetUp");
             authCallback.onScreenLockNotSetUp();
             return false;
         }
 
         if (!sFingerprintHelper.hasEnrolledFingerprints()) {
-            Log.d(TAG, "onNoFingerprintRegistered");
+            LogUtils.log("onNoFingerprintRegistered");
             authCallback.onNoFingerprintRegistered();
             return false;
         }
 
         if (!sFingerprintHelper.initCipher()) {
-            Log.d(TAG, "Cipher init error");
+            LogUtils.log("Cipher init error");
             authCallback.onFailed(CIPHER_INIT_ERROR.getErrorCode(), CIPHER_INIT_ERROR.getErrorMessage());
             return false;
         }
