@@ -15,6 +15,8 @@ public class SimpleFingerprint {
 
     private static FingerprintHelper sFingerprintHelper;
 
+    private static boolean useFingerprintInFuture = true;
+
     public static void init(@NonNull Context context) {
         init(context, false);
     }
@@ -53,8 +55,17 @@ public class SimpleFingerprint {
         }
 
         if (!sFingerprintHelper.initCipher()) {
+            // The lock screen has been disabled or or a fingerprint got enrolled.
+            // so need to use password or other backup way to authenticate.
             LogUtils.log("Cipher init error");
             authCallback.onFailed(CIPHER_INIT_ERROR.getErrorCode(), CIPHER_INIT_ERROR.getErrorMessage());
+
+            // Need to ask user if want to user fingerprint to authenticate next time.
+            if (useFingerprintInFuture) {
+                // Re-create the key so that fingerprints including new ones are validated.
+                sFingerprintHelper.createKey(true, true);
+            }
+
             return false;
         }
 

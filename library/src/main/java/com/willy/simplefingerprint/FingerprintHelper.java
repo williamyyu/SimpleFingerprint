@@ -56,14 +56,13 @@ class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
             LogUtils.log("Failed to get an instance of KeyStore", e);
         }
 
-        createKey(KEY_NAME, true);
+        createKey(true, false);
     }
 
     /**
      * Creates a symmetric key in the Android Key Store which can only be used after the user has
      * authenticated with fingerprint.
      *
-     * @param keyName                          the name of the key to be created
      * @param invalidatedByBiometricEnrollment if {@code false} is passed, the created key will not
      *                                         be invalidated even if a new fingerprint is enrolled.
      *                                         The default value is {@code true}, so passing
@@ -72,7 +71,7 @@ class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
      *                                         enrolled.). Note that this parameter is only valid if
      *                                         the app works on Android N developer preview.
      */
-    private void createKey(String keyName, boolean invalidatedByBiometricEnrollment) {
+    void createKey(boolean invalidatedByBiometricEnrollment, boolean forceCreate) {
         // The enrolling flow for fingerprint. This is where you ask the user to set up fingerprint
         // for your flow. Use of keys is necessary if you need to know if the set of
         // enrolled fingerprints has changed.
@@ -81,12 +80,12 @@ class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
             // Set the alias of the entry in Android KeyStore where the key will appear
             // and the constrains (purposes) in the constructor of the Builder
 
-            if (mKeyStore.containsAlias(keyName)) {
+            if (mKeyStore.containsAlias(KEY_NAME) && !forceCreate) {
                 return;
             }
 
             KeyGenParameterSpec.Builder builder = new KeyGenParameterSpec.Builder(
-                    keyName,
+                    KEY_NAME,
                     KeyProperties.PURPOSE_ENCRYPT |
                             KeyProperties.PURPOSE_DECRYPT)
                     .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
@@ -117,7 +116,7 @@ class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
 
     /**
      * Initialize the {@link Cipher} instance with the created key in the
-     * {@link #createKey(String, boolean)} method.
+     * {@link #createKey(boolean, boolean)} method.
      * <p>
      * keyName is the key name to init the cipher
      *
