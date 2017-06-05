@@ -13,7 +13,7 @@ public class SimpleFingerprint {
 
     static final String TAG = "SimpleFingerprint";
 
-    private static FingerprintHelper sFingerprintHelper;
+    public static FingerprintHelper sFingerprintHelper;
 
     private static boolean useFingerprintInFuture = true;
 

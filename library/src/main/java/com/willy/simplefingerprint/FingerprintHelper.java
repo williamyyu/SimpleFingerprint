@@ -30,7 +30,7 @@ import static com.willy.simplefingerprint.AuthError.AUTHENTICATE_FAILED;
  * Created by willy on 2017/5/31.
  */
 
-class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
+public class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
 
     private static final String KEY_NAME = "default_key";
 
@@ -124,7 +124,7 @@ class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
      * been disabled or reset after the key was generated, or if a fingerprint got enrolled after
      * the key was generated.
      */
-    boolean initCipher() {
+    public boolean initCipher() {
         mCipher = createCipher();
         if (mCipher == null) {
             return false;
@@ -155,7 +155,7 @@ class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
         }
     }
 
-    void startAuth(AuthCallback authCallback) {
+    public void startAuth(AuthCallback authCallback) {
         if (isScanning) {
             return;
         }
@@ -194,16 +194,16 @@ class FingerprintHelper extends FingerprintManager.AuthenticationCallback {
         }
     }
 
-    boolean isHardwareDetected() {
+    public boolean isHardwareDetected() {
         // noinspection ResourceType
         return mFingerprintManager.isHardwareDetected();
     }
 
-    boolean isKeyguardSecure() {
+    public boolean isKeyguardSecure() {
         return mKeyguardManager.isKeyguardSecure();
     }
 
-    boolean hasEnrolledFingerprints() {
+    public boolean hasEnrolledFingerprints() {
         // noinspection ResourceType
         return mFingerprintManager.hasEnrolledFingerprints();
     }

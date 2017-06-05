@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 tvStatus.setText("Start Auth ...");
+
                 SimpleFingerprint.authenticate(new AuthCallback() {
                     @Override
                     public void onNotInitialize() {
@@ -56,6 +57,29 @@ public class MainActivity extends AppCompatActivity {
                         tvStatus.setText("onFailed:" + errorMessage);
                     }
                 });
+
+//                RxFingerprint.authenticate()
+//                        .subscribe(new Observer<String>() {
+//                            @Override
+//                            public void onSubscribe(Disposable d) {
+//
+//                            }
+//
+//                            @Override
+//                            public void onNext(String s) {
+//                                Log.e("test", s);
+//                            }
+//
+//                            @Override
+//                            public void onError(Throwable e) {
+//
+//                            }
+//
+//                            @Override
+//                            public void onComplete() {
+//
+//                            }
+//                        });
             }
         });
 

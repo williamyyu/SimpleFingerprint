@@ -3,7 +3,7 @@ package com.willy.simplefingerprint;
 /**
  * Created by willy on 2017/6/1.
  */
-enum AuthError {
+public enum AuthError {
     /**
      * This happens if the lock screen has been disabled or or a fingerprint got
      * enrolled. Thus show the dialog to authenticate with their password first
