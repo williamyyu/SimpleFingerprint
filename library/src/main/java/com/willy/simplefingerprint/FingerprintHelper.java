@@ -24,7 +24,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
-import static com.willy.simplefingerprint.AuthError.AUTHENTICATE_FAILED;
+import static com.willy.simplefingerprint.AuthFailure.AUTHENTICATE_FAILED;
 
 /**
  * Created by willy on 2017/5/31.
@@ -208,20 +208,28 @@ public class FingerprintHelper extends FingerprintManager.AuthenticationCallback
         return mFingerprintManager.hasEnrolledFingerprints();
     }
 
+    /**
+     * errorCode reference
+     * https://developer.android.com/reference/android/hardware/fingerprint/FingerprintManager.html#FINGERPRINT_ERROR_CANCELED
+     */
     @Override
     public void onAuthenticationError(int errorCode, CharSequence errString) {
         LogUtils.log("onAuthenticationError: " + errString + "(" + errorCode + ")");
         if (mAuthCallback != null) {
-            mAuthCallback.onFailed(errorCode, errString.toString());
+            mAuthCallback.onFailed(new AuthFailure(errorCode, errString.toString()));
             stopAuth();
         }
     }
 
+    /**
+     * helpCode reference
+     * https://developer.android.com/reference/android/hardware/fingerprint/FingerprintManager.html#FINGERPRINT_ACQUIRED_GOOD
+     */
     @Override
     public void onAuthenticationHelp(int helpCode, CharSequence helpString) {
         LogUtils.log("onAuthenticationHelp: " + helpString + "(" + helpCode + ")");
         if (mAuthCallback != null) {
-            mAuthCallback.onFailed(helpCode, helpString.toString());
+            mAuthCallback.onFailed(new AuthFailure(helpCode, helpString.toString()));
             stopAuth();
         }
     }
@@ -238,13 +246,13 @@ public class FingerprintHelper extends FingerprintManager.AuthenticationCallback
     /**
      * We have 5 times to retry,
      * after failed 5 times, will call {@link #onAuthenticationError(int, CharSequence)}
-     * and disable authenticate for a while (depends on mobile).
+     * and disable authenticate for a while (duration depends on mobile).
      */
     @Override
     public void onAuthenticationFailed() {
         LogUtils.log("onAuthenticationFailed: A fingerprint was read successfully, but that fingerprint was not registered on the device.");
         if (mAuthCallback != null) {
-            mAuthCallback.onFailed(AUTHENTICATE_FAILED.getErrorCode(), AUTHENTICATE_FAILED.getErrorMessage());
+            mAuthCallback.onFailed(new AuthFailure(AUTHENTICATE_FAILED));
         }
     }
 }

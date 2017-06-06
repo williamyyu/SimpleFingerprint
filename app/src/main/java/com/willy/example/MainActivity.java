@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.willy.simplefingerprint.AuthCallback;
+import com.willy.simplefingerprint.AuthFailure;
 import com.willy.simplefingerprint.SimpleFingerprint;
 
 public class MainActivity extends AppCompatActivity {
@@ -53,8 +54,12 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailed(int errorCode, String errorMessage) {
-                        tvStatus.setText("onFailed:" + errorMessage);
+                    public void onFailed(AuthFailure authFailure) {
+                        switch(authFailure.getErrorCode()){
+                            case FingerprintManager.FINGERPRINT_ACQUIRED_GOOD:
+                                break;
+                        }
+                        tvStatus.setText("onFailed:" + authFailure.getErrorMessage());
                     }
                 });
 

@@ -3,7 +3,7 @@ package com.willy.simplefingerprint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import static com.willy.simplefingerprint.AuthError.CIPHER_INIT_ERROR;
+import static com.willy.simplefingerprint.AuthFailure.CIPHER_INIT_ERROR;
 
 /**
  * Created by willy on 2017/6/1.
@@ -58,7 +58,7 @@ public class SimpleFingerprint {
             // The lock screen has been disabled or or a fingerprint got enrolled.
             // so need to use password or other backup way to authenticate.
             LogUtils.log("Cipher init error");
-            authCallback.onFailed(CIPHER_INIT_ERROR.getErrorCode(), CIPHER_INIT_ERROR.getErrorMessage());
+            authCallback.onFailed(new AuthFailure(CIPHER_INIT_ERROR));
 
             // Need to ask user if want to user fingerprint to authenticate next time.
             if (useFingerprintInFuture) {

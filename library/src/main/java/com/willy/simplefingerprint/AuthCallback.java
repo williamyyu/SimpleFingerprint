@@ -18,5 +18,5 @@ public interface AuthCallback {
 
     void onSuccess(FingerprintManager.CryptoObject cryptoObject);
 
-    void onFailed(int errorCode, String errorMessage);
+    void onFailed(AuthFailure authFailure);
 }
