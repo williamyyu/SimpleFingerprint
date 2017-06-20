@@ -3,6 +3,7 @@ package com.willy.simplefingerprint.rxjava2;
 import android.hardware.fingerprint.FingerprintManager;
 
 import com.willy.simplefingerprint.AuthCallback;
+import com.willy.simplefingerprint.AuthFailure;
 import com.willy.simplefingerprint.LogUtils;
 
 import io.reactivex.Observable;
@@ -76,15 +77,16 @@ public class RxFingerprint {
                     }
 
                     @Override
-                    public void onSuccess(FingerprintManager.CryptoObject cryptoObject) {
+                    public void onSucceeded(FingerprintManager.CryptoObject cryptoObject) {
                         emitter.onNext("onSuccess");
                         emitter.onComplete();
                     }
 
                     @Override
-                    public void onFailed(int errorCode, String errorMessage) {
-                        emitter.onNext("onFailed:" + errorMessage);
+                    public void onFailed(AuthFailure authFailure) {
+                        emitter.onNext("onFailed:" + authFailure.getErrorMessage());
 //                        emitter.onComplete();
+
                     }
                 });
             }

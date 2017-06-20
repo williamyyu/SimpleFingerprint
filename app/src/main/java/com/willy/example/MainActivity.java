@@ -49,15 +49,18 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onSuccess(FingerprintManager.CryptoObject cryptoObject) {
+                    public void onSucceeded(FingerprintManager.CryptoObject cryptoObject) {
                         tvStatus.setText("onSuccess");
                     }
 
                     @Override
                     public void onFailed(AuthFailure authFailure) {
-                        switch(authFailure.getErrorCode()){
-                            case FingerprintManager.FINGERPRINT_ACQUIRED_GOOD:
+                        switch (authFailure.getErrorCode()) {
+                            case FingerprintManager.FINGERPRINT_ERROR_CANCELED:
                                 break;
+                            case AuthFailure.AUTHENTICATE_FAILED:
+                                break;
+
                         }
                         tvStatus.setText("onFailed:" + authFailure.getErrorMessage());
                     }

@@ -24,6 +24,8 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
+import static android.hardware.fingerprint.FingerprintManager.FINGERPRINT_ERROR_CANCELED;
+import static android.hardware.fingerprint.FingerprintManager.FINGERPRINT_ERROR_LOCKOUT;
 import static com.willy.simplefingerprint.AuthFailure.AUTHENTICATE_FAILED;
 
 /**
@@ -216,7 +218,13 @@ public class FingerprintHelper extends FingerprintManager.AuthenticationCallback
     public void onAuthenticationError(int errorCode, CharSequence errString) {
         LogUtils.log("onAuthenticationError: " + errString + "(" + errorCode + ")");
         if (mAuthCallback != null) {
-            mAuthCallback.onFailed(new AuthFailure(errorCode, errString.toString()));
+            switch (errorCode) {
+                case FINGERPRINT_ERROR_CANCELED:
+                case FINGERPRINT_ERROR_LOCKOUT:
+                default:
+                    mAuthCallback.onFailed(new AuthFailure(errorCode, errString.toString()));
+                    break;
+            }
             stopAuth();
         }
     }
@@ -238,7 +246,7 @@ public class FingerprintHelper extends FingerprintManager.AuthenticationCallback
     public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
         LogUtils.log("onAuthenticationSucceeded!");
         if (mAuthCallback != null) {
-            mAuthCallback.onSuccess(result.getCryptoObject());
+            mAuthCallback.onSucceeded(result.getCryptoObject());
             stopAuth();
         }
     }

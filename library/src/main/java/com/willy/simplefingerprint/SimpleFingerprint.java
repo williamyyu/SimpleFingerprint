@@ -32,24 +32,24 @@ public class SimpleFingerprint {
 
     public static boolean authenticate(AuthCallback authCallback) {
         if (sFingerprintHelper == null) {
-            LogUtils.log("onNotInitialize");
+            LogUtils.log("Need to call SimpleFingerprint.init() to initialize Library before you start authenticate.");
             authCallback.onNotInitialize();
             return false;
         }
         if (!sFingerprintHelper.isHardwareDetected()) {
-            LogUtils.log("onNoHardwareDetected");
+            LogUtils.log("There is no hardware detected on this device.");
             authCallback.onNoHardwareDetected();
             return false;
         }
 
         if (!sFingerprintHelper.isKeyguardSecure()) {
-            LogUtils.log("onScreenLockNotSetUp");
+            LogUtils.log("Need to set up keyguard secure.");
             authCallback.onScreenLockNotSetUp();
             return false;
         }
 
         if (!sFingerprintHelper.hasEnrolledFingerprints()) {
-            LogUtils.log("onNoFingerprintRegistered");
+            LogUtils.log("There is no registered fingerprints.");
             authCallback.onNoFingerprintRegistered();
             return false;
         }

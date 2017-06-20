@@ -6,17 +6,44 @@ import android.hardware.fingerprint.FingerprintManager;
  * Created by willy on 2017/6/1.
  */
 
-public interface AuthCallback {
+public abstract class AuthCallback {
 
-    void onNotInitialize();
+    /**
+     * Need to call SimpleFingerprint.init() to initialize Library before you start authenticate.
+     */
+    protected void onNotInitialize() {
 
-    void onNoHardwareDetected();
+    }
 
-    void onScreenLockNotSetUp();
+    /**
+     * There is no fingerprint sensor hardware detected on this device.
+     */
+    protected void onNoHardwareDetected() {
 
-    void onNoFingerprintRegistered();
+    }
 
-    void onSuccess(FingerprintManager.CryptoObject cryptoObject);
+    /**
+     * Need to set up keyguard secure.
+     */
+    protected void onScreenLockNotSetUp() {
 
-    void onFailed(AuthFailure authFailure);
+    }
+
+    /**
+     * There is no registered fingerprints in this device.
+     */
+    protected void onNoFingerprintRegistered() {
+
+    }
+
+    /**
+     * The operation was canceled because the API is locked out due to too many attempts.
+     */
+    protected void onLockOut() {
+
+    }
+
+    protected abstract void onSucceeded(FingerprintManager.CryptoObject cryptoObject);
+
+    protected abstract void onFailed(AuthFailure authFailure);
 }
